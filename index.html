@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>听音拼句 · 英语逐词拼写训练</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- ===== 顶部栏 ===== -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo">🎧</div>
+        <div>
+          <h1>听音拼句</h1>
+          <p>听发音 · 逐词打字 · 即时校验</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="select-wrap">
+          <label for="voiceSelect">发音人</label>
+          <select id="voiceSelect"><option value="">默认</option></select>
+        </div>
+        <div class="select-wrap">
+          <label for="rateSelect">语速</label>
+          <select id="rateSelect">
+            <option value="0.5">0.5x 慢速</option>
+            <option value="0.65">0.65x</option>
+            <option value="0.8">0.8x</option>
+            <option value="1" selected>1.0x 常速</option>
+            <option value="1.2">1.2x</option>
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== 统计条 ===== -->
+    <section class="stats-bar">
+      <div class="stat"><span class="stat-num" id="statTotal">0</span><span class="stat-label">已练句子</span></div>
+      <div class="stat"><span class="stat-num" id="statAccuracy">--</span><span class="stat-label">通过率</span></div>
+      <div class="stat"><span class="stat-num" id="statStreak">0</span><span class="stat-label">连对</span></div>
+      <div class="stat"><span class="stat-num" id="statBest">0</span><span class="stat-label">最佳连对</span></div>
+      <button class="btn-reset-stats" id="resetStats">重置</button>
+    </section>
+
+    <main class="layout">
+      <!-- ===== 左侧：练习主区 ===== -->
+      <section class="practice-card">
+        <div class="mode-tabs">
+          <button class="mode-tab active" data-mode="sentence">📝 听音拼句</button>
+          <button class="mode-tab" data-mode="word">🔤 听音拼词</button>
+        </div>
+
+        <!-- 播放区 -->
+        <div class="player-area">
+          <button class="btn-play" id="btnPlay" title="重播发音 (Tab)">
+            <span class="play-icon">▶</span>
+            <span class="sound-wave"><i></i><i></i><i></i><i></i><i></i></span>
+          </button>
+          <div class="player-info">
+            <p class="player-title" id="playerTitle">🔊 听句子发音，逐词拼出来</p>
+            <p class="player-sub" id="playerSub">打字输入，按【空格】确认一个词</p>
+          </div>
+          <div class="player-actions">
+            <button class="btn-slow" id="btnSlow">🐢 慢速</button>
+            <span class="play-count" id="playCount">播放 0 次</span>
+          </div>
+        </div>
+
+        <!-- 连击条 -->
+        <div class="combo-bar">
+          <span class="combo-label">连击</span>
+          <span class="combo-num" id="comboNum">×0</span>
+          <span class="combo-rating hidden" id="comboRating">Perfect!</span>
+        </div>
+
+        <!-- 词槽区 -->
+        <div class="slots-board" id="slotsBoard">
+          <div class="zh-hint hidden" id="zhHint"></div>
+          <div class="slots" id="slots"></div>
+          <p class="slots-tip">输入英文 → <b>空格</b> 确认 · <b>Backspace</b> 删除 · 打错立刻<span class="demo-bad">红字</span>提示 · 错 3 次自动揭晓</p>
+        </div>
+
+        <!-- 结果面板 -->
+        <div class="result hidden" id="result">
+          <div class="result-head">
+            <span class="result-badge" id="resBadge">Perfect! 🎉</span>
+            <span class="result-detail" id="resDetail">8/8 词一次通过 · 用时 23 秒 · 最高连击 8</span>
+          </div>
+          <div class="result-words" id="resWords"></div>
+          <p class="result-zh" id="resZh"></p>
+          <div class="result-actions">
+            <button class="btn btn-ghost" id="btnRetry">🔄 再练一遍</button>
+            <button class="btn btn-primary" id="btnNext">下一句 (Enter)</button>
+          </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="action-row">
+          <button class="btn btn-ghost" id="btnHint">💡 提示</button>
+          <button class="btn btn-ghost" id="btnReveal">🙈 跳过本词</button>
+        </div>
+      </section>
+
+      <!-- ===== 右侧：题库设置 ===== -->
+      <aside class="side-card">
+        <h2 class="side-title">题库设置</h2>
+
+        <div class="setting-group" id="sentenceSettings">
+          <p class="setting-label">难度</p>
+          <div class="chip-row" id="levelChips">
+            <button class="chip active" data-level="all">全部</button>
+            <button class="chip" data-level="1">初级</button>
+            <button class="chip" data-level="2">中级</button>
+            <button class="chip" data-level="3">高级</button>
+          </div>
+          <p class="setting-label">场景</p>
+          <div class="chip-row" id="categoryChips">
+            <button class="chip active" data-cat="all">全部</button>
+          </div>
+          <p class="setting-label">出题顺序</p>
+          <div class="chip-row" id="orderChips">
+            <button class="chip active" data-order="random">随机</button>
+            <button class="chip" data-order="seq">顺序</button>
+          </div>
+        </div>
+
+        <div class="setting-group hidden" id="wordSettings">
+          <p class="setting-label">单词长度</p>
+          <div class="chip-row" id="lenChips">
+            <button class="chip active" data-len="all">全部</button>
+            <button class="chip" data-len="short">短 (≤5)</button>
+            <button class="chip" data-len="mid">中 (6-9)</button>
+            <button class="chip" data-len="long">长 (≥10)</button>
+          </div>
+          <p class="word-bank-info" id="wordBankInfo">词库加载中…</p>
+        </div>
+
+        <div class="setting-group">
+          <p class="setting-label">练习选项</p>
+          <div class="chip-row">
+            <button class="chip active" id="toggleWordTTS">🔊 拼对逐词发音</button>
+            <button class="chip active" id="toggleAutoNext">⏭ 自动下一句</button>
+          </div>
+        </div>
+
+        <div class="progress-box">
+          <h3>本次进度</h3>
+          <div class="progress-item"><span>已完成 <b id="pgDone">0</b> 题 · 第 <b id="pgIndex">-</b> 题</span></div>
+          <div class="mastered-box">
+            <p>已掌握（全对一次通过）：<b id="pgMastered">0</b> / <span id="pgTotal">0</span></p>
+            <div class="mastered-bar"><div class="mastered-fill" id="masteredFill"></div></div>
+          </div>
+          <button class="btn btn-ghost btn-review" id="btnReview">🔊 复读当前题</button>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <p>空格 确认词 · Enter 下一句 · Tab 重播 · 打错的字母会立刻显示红色，改对再按空格 · 数据保存在本地浏览器</p>
+    </footer>
+  </div>
+
+  <script src="js/sentences.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
