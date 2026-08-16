@@ -23,6 +23,8 @@
 
 ## 🚀 在线体验
 
+使用在线地址体验。觉得好了之后再在本地部署替换你想要的题库数据即可
+
 > `https://C33laichi.github.io/english-speaking-practice/`
 
 ## 💻 本地运行
