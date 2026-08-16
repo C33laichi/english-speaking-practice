@@ -23,8 +23,7 @@
 
 ## 🚀 在线体验
 
-> 发布到 GitHub Pages 后，把这里替换成你的在线地址：
-> `https://<你的用户名>.github.io/<仓库名>/`
+> `https://C33laichi.github.io/english-speaking-practice/`
 
 ## 💻 本地运行
 
